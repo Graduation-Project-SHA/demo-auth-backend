@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  Doctor
+  Patient
+}
+
+enum Language {
+  AR
+  EN
+}
+
+// Admin & RBAC
+model Admin {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  roleId       Int
+  role         Role     @relation(fields: [roleId], references: [id])
+  isActive     Boolean  @default(true)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Role {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  admins          Admin[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+}
+
+model Permission {
+  id              Int              @id @default(autoincrement())
+  resource        String           @unique
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId Int
+  accessLevel  Int        @default(0)
+
+  @@unique([roleId, permissionId])
+}
+
+// Core Models
+model Country {
+  id        String   @id @default(cuid())
+  code      String   @unique // e.g., "KW", "SA", "EG"
+  name      String
+  users     User[]
+  createdAt DateTime @default(now())
+}
+
+enum UserStatus {
+  PENDING_COMPLETION
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id String @id @default(cuid())
+
+  email        String   @unique
+  password     String?
+  refreshToken String?
+  name         String?
+  username     String?  @unique
+  phone        String?
+  language     Language @default(AR)
+  role         UserRole @default(Patient)
+  googleId     String?  @unique
+  facebookId   String?  @unique
+
+  status UserStatus @default(PENDING_COMPLETION)
+
+  emailResetCode          String?
+  emailResetCodeExpiresAt DateTime?
+
+  dob           DateTime?
+  gender        String?
+  height        Float?
+  weight        Float?
+  medicalStatus String?
+  address       String?
+
+  profileImage String?
+
+  countryId String?
+  country   Country? @relation(fields: [countryId], references: [id])
+
+  fcmTokens UserFCMToken[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model UserFCMToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_fcm_tokens")
+}
+
+model AppSettings {
+  id              String   @id @default(cuid())
+  appName         String   @default("App")
+  commissionRate  Float    @default(0.10)
+  currency        String   @default("EGP")
+  supportEmail    String?
+  supportPhone    String?
+  appVersion      String   @default("1.0.0")
+  maintenanceMode Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
