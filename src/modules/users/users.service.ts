@@ -171,10 +171,7 @@ export class UsersService {
     };
   }
 
-  async update(
-    id: string,
-    updateUserDto: UpdateUserDto,
-  ) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const existingUser = await this.prisma.user.findUnique({
       where: { id, deletedAt: null },
       select: { id: true },
@@ -317,7 +314,6 @@ export class UsersService {
 
     return await bcrypt.compare(refreshToken, user.refreshToken);
   }
- 
 
   async deactivateUser(id: string) {
     const user = await this.prisma.user.findUnique({

@@ -29,7 +29,7 @@ import { join } from 'path';
             pass: config.get<string>('MAIL_PASS'),
           },
           tls: {
-            rejectUnauthorized: false, 
+            rejectUnauthorized: false,
           },
         },
         defaults: {
