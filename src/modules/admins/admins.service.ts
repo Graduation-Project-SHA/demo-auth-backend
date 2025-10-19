@@ -314,76 +314,7 @@ export class AdminsService {
     };
   }
 
-  async getMyStats(adminId: number) {
-    // Verify admin exists
-    await this.findAdminById(adminId);
-
-    const [
-      totalUsers,
-      totalCoaches,
-      totalSubscriptions,
-      todayRegistrations,
-      totalAdmins,
-      totalProducts,
-      totalRestaurants,
-    ] = await Promise.all([
-      // Total users
-      this.prisma.user.count(),
-
-      // Total coaches
-      this.prisma.user.count({
-        where: {
-          role: 'COACH',
-        },
-      }),
-
-      // Total subscriptions
-      this.prisma.subscriptionPlan.count(),
-
-      // Today's registrations
-      this.prisma.user.count({
-        where: {
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-        },
-      }),
-
-      // Total admins
-      this.prisma.admin.count({
-        where: {
-          isActive: true,
-        },
-      }),
-
-      // Total products
-      this.prisma.product.count(),
-
-      // Total restaurants
-      this.prisma.restaurant.count(),
-    ]);
-
-    return {
-      message: 'Admin statistics retrieved successfully',
-      data: {
-        overview: {
-          totalUsers,
-          totalCoaches,
-          totalSubscriptions,
-          todayRegistrations,
-          totalAdmins,
-          totalProducts,
-          totalRestaurants,
-        },
-        adminInfo: {
-          id: adminId,
-          loginTime: new Date(),
-        },
-        lastUpdated: new Date(),
-      },
-    };
-  }
-
+  
   async remove(id: number) {
     await this.findAdminById(id);
 

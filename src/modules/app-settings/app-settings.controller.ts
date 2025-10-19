@@ -42,17 +42,5 @@ export class AppSettingsController {
     return this.appSettingsService.setMaintenanceMode(isEnabled);
   }
 
-  @Get('coach-balance/:coachId')
-  async getCoachBalance(@Param('coachId') coachId: string) {
-    const balance = await this.appSettingsService.getCoachBalance(coachId);
-    return { coachId, balance };
-  }
-
-  @Put('distribute-earnings/:coachId')
-  async distributeEarnings(
-    @Param('coachId') coachId: string,
-    @Body() body: { amount: number },
-  ) {
-    return this.appSettingsService.distributeEarnings(coachId, body.amount);
-  }
+  
 }

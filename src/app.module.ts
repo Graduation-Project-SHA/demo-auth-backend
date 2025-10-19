@@ -6,22 +6,6 @@ import { AdminsModule } from './modules/admins/admins.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CountriesModule } from './modules/countries/countries.module';
-import { CoachesModule } from './modules/coaches/coaches.module';
-import { PostsModule } from './modules/posts/posts.module';
-import { StoriesModule } from './modules/stories/stories.module';
-import { ProductsModule } from './modules/products/products.module';
-import { RestaurantsModule } from './modules/restaurants/restaurants.module';
-import { ProductsCategoriesModule } from './modules/products-categories/products-categories.module';
-import { SponsorsModule } from './modules/sponsors/sponsors.module';
-import { CertificatesModule } from './modules/certificates/certificates.module';
-import { ExerciseLibraryModule } from './modules/exercise-library/exercise-library.module';
-import { MealLibraryModule } from './modules/meal-library/meal-library.module';
-import { SupplementLibraryModule } from './modules/supplement-library/supplement-library.module';
-import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
-import { ChatModule } from './modules/chat/chat.module';
-import { AppSettingsModule } from './modules/app-settings/app-settings.module';
-import { NotificationsModule } from './modules/notifications/notifications.module';
-
 import config from './config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -45,6 +29,9 @@ import { join } from 'path';
             user: config.get<string>('MAIL_USER'),
             pass: config.get<string>('MAIL_PASS'),
           },
+          tls: {
+            rejectUnauthorized: false, 
+          },
         },
         defaults: {
           from: `"No Reply" <${config.get<string>('MAIL_USER')}>`,
@@ -64,21 +51,6 @@ import { join } from 'path';
     AuthModule,
     UsersModule,
     CountriesModule,
-    CoachesModule,
-    PostsModule,
-    StoriesModule,
-    ProductsModule,
-    RestaurantsModule,
-    ProductsCategoriesModule,
-    SponsorsModule,
-    CertificatesModule,
-    ExerciseLibraryModule,
-    MealLibraryModule,
-    SupplementLibraryModule,
-    SubscriptionsModule,
-    ChatModule,
-    AppSettingsModule,
-    NotificationsModule,
   ],
 })
 export class AppModule {}

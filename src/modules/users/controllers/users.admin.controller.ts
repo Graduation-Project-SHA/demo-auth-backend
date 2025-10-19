@@ -42,12 +42,7 @@ export class UsersAdminController {
   findAll(@Query() query: UserQueryDto) {
     return this.usersService.findAll(query);
   }
-
-  @Get('stats')
-  @RequireRead('users')
-  getStats() {
-    return this.usersService.getStats();
-  }
+ 
 
   @Get(':id')
   @RequireRead('users')

@@ -29,9 +29,5 @@ export class MyAdminController {
   }
 
    
-  @Get('stats')
-  async getMyStats(@Req() req: Request) {
-    const adminId = (req as any).user.id;
-    return this.adminsService.getMyStats(adminId);
-  }
+ 
 }

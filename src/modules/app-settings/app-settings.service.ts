@@ -66,34 +66,5 @@ export class AppSettingsService {
     });
   }
 
-  async distributeEarnings(coachId: string, amount: number) {
-    const commissionRate = await this.getCommissionRate();
-    const coachEarnings = amount * (1 - commissionRate);
-    const appCommission = amount * commissionRate;
-
-    await this.prisma.coachProfile.update({
-      where: { id: coachId },
-      data: {
-        balance: {
-          increment: coachEarnings,
-        },
-      },
-    });
-
-    return {
-      totalAmount: amount,
-      coachEarnings,
-      appCommission,
-      commissionRate,
-    };
-  }
-
-  async getCoachBalance(coachId: string) {
-    const coach = await this.prisma.coachProfile.findUnique({
-      where: { id: coachId },
-      select: { balance: true },
-    });
-
-    return coach?.balance || 0;
-  }
+  
 }

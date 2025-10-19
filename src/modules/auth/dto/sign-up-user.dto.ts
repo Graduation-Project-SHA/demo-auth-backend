@@ -98,4 +98,8 @@ export class SignUpUserDto {
   @IsOptional()
   @IsString()
   countryId?: string;
+
+  @IsString()
+  @IsEnum(UserRole, { message: 'Role must be a valid user role' })
+  role: UserRole = UserRole.Patient;
 }

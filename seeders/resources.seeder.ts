@@ -5,6 +5,7 @@ export default async function seedPermissions(prisma: PrismaClient) {
     'admins',
     'roles',
     'users',
+    'countries'
   ];
 
   // await prisma.permission.deleteMany({

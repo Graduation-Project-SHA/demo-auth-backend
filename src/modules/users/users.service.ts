@@ -377,59 +377,7 @@ export class UsersService {
 
     return await bcrypt.compare(refreshToken, user.refreshToken);
   }
-
-  async getStats() {
-    const [totalUsers, totalPlayers, totalCoaches, activeUsers, inactiveUsers] =
-      await this.prisma.$transaction([
-        this.prisma.user.count({
-          where: { deletedAt: null },
-        }),
-        this.prisma.user.count({
-          where: { deletedAt: null, role: 'PLAYER' },
-        }),
-        this.prisma.user.count({
-          where: { deletedAt: null, role: 'COACH' },
-        }),
-        this.prisma.user.count({
-          where: { deletedAt: null, refreshToken: { not: null } },
-        }),
-        this.prisma.user.count({
-          where: { deletedAt: null, refreshToken: null },
-        }),
-      ]);
-
-    const usersByCountry = await this.prisma.user.groupBy({
-      by: ['countryId'],
-      where: { deletedAt: null, countryId: { not: null } },
-      _count: { id: true },
-      orderBy: { _count: { id: 'desc' } },
-      take: 5,
-    });
-
-    const usersByCountryData = await Promise.all(
-      usersByCountry.map(async (item) => {
-        const country = await this.prisma.country.findUnique({
-          where: { id: item.countryId! },
-          select: { name: true, code: true },
-        });
-        return {
-          countryId: item.countryId,
-          countryName: country?.name || 'Unknown',
-          countryCode: country?.code || 'XX',
-          usersCount: item._count.id,
-        };
-      }),
-    );
-
-    return {
-      totalUsers,
-      totalPlayers,
-      totalCoaches,
-      activeUsers,
-      inactiveUsers,
-      usersByCountry: usersByCountryData,
-    };
-  }
+ 
 
   async deactivateUser(id: string) {
     const user = await this.prisma.user.findUnique({
