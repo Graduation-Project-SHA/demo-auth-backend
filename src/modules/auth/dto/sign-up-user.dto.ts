@@ -6,18 +6,10 @@ import {
   IsEnum,
   IsPhoneNumber,
   IsDateString,
-  IsNumber,
-  Min,
-  Max,
   Matches,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { UserRole, Language } from '@prisma/client';
-
-export enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
+import { UserRole } from '@prisma/client';
 
 export class SignUpUserDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })
@@ -36,20 +28,18 @@ export class SignUpUserDto {
   @IsString()
   profileImage?: string;
 
+  @IsOptional()
   @IsString({ message: 'Name must be a string' })
   @Transform(({ value }) => value?.trim())
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsString({ message: 'UserName must be a string' })
-  username: string;
+  username?: string;
 
   @IsOptional()
   @IsPhoneNumber(undefined, { message: 'Please provide a valid phone number' })
   phone?: string;
-
-  @IsOptional()
-  @IsEnum(Language, { message: 'Language must be either AR or EN' })
-  language?: Language;
 
   @IsOptional()
   @IsDateString(
@@ -60,46 +50,14 @@ export class SignUpUserDto {
   dob?: string;
 
   @IsOptional()
-  @IsEnum(Gender, { message: 'Gender must be either MALE or FEMALE' })
-  gender?: Gender;
-
-  @IsOptional()
-  @Transform(({ value }) =>
-    value !== undefined && value !== null && value !== ''
-      ? parseFloat(value)
-      : undefined,
-  )
-  @IsNumber({}, { message: 'Height must be a number' })
-  @Min(50, { message: 'Height must be at least 50 cm' })
-  @Max(250, { message: 'Height must be at most 250 cm' })
-  height?: number;
-
-  @IsOptional()
-  @Transform(({ value }) =>
-    value !== undefined && value !== null && value !== ''
-      ? parseFloat(value)
-      : undefined,
-  )
-  @IsNumber({}, { message: 'Weight must be a number' })
-  @Min(20, { message: 'Weight must be at least 20 kg' })
-  @Max(300, { message: 'Weight must be at most 300 kg' })
-  weight?: number;
-
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value?.trim())
-  medicalStatus?: string;
+  @IsString({ message: 'Gender must be a string' })
+  gender?: string;
 
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value?.trim())
   address?: string;
 
-  @IsOptional()
-  @IsString()
-  countryId?: string;
-
-  @IsString()
   @IsEnum(UserRole, { message: 'Role must be a valid user role' })
   role: UserRole = UserRole.Patient;
 }

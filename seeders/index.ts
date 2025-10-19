@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import seedPermissions from './resources.seeder';
 import seedSuperAdminRole from './superAdminRole.seeder';
 import seedSuperAdmin from './superAdmin.seeder';
-import { seedAppSettings } from './appSettings.seeder';
 
 const prisma = new PrismaClient();
 
@@ -24,11 +23,6 @@ async function main() {
   console.log('🙋‍♂️ Seeding Super Admin User...');
   await seedSuperAdmin(prisma);
   console.log('✅ Super Admin User seeded.\n');
-
-  // 4. Seed app settings
-  console.log('⚙️ Seeding App Settings...');
-  await seedAppSettings(prisma);
-  console.log('✅ App Settings seeded.\n');
 
   console.log('🎉 Seeding completed successfully.');
 }

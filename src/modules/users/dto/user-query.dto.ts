@@ -1,7 +1,6 @@
-// filepath: /home/ali-hassan/Desktop/work/mostaql/Sport_App_Web/back-end/src/modules/users/dto/user-query.dto.ts
 import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { UserRole, Language } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 
 enum SortOrder {
   ASC = 'asc',
@@ -17,14 +16,6 @@ export class UserQueryDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-
-  @IsOptional()
-  @IsEnum(Language)
-  language?: Language;
-
-  @IsOptional()
-  @IsString()
-  countryId?: string;
 
   @IsOptional()
   @Type(() => Number)

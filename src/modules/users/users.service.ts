@@ -11,7 +11,6 @@ import { SignUpUserDto } from '../auth/dto/sign-up-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UserStatus } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -24,22 +23,10 @@ export class UsersService {
     name: true,
     phone: true,
     role: true,
-    language: true,
     dob: true,
     gender: true,
-    height: true,
-    weight: true,
-    medicalStatus: true,
     address: true,
     profileImage: true,
-    countryId: true,
-    country: {
-      select: {
-        id: true,
-        name: true,
-        code: true,
-      },
-    },
     createdAt: true,
     updatedAt: true,
   };
@@ -51,21 +38,10 @@ export class UsersService {
     name: true,
     phone: true,
     role: true,
-    language: true,
     dob: true,
     gender: true,
-    height: true,
-    weight: true,
-    medicalStatus: true,
     address: true,
     profileImage: true,
-    country: {
-      select: {
-        id: true,
-        name: true,
-        code: true,
-      },
-    },
     createdAt: true,
     updatedAt: true,
   };
@@ -86,11 +62,8 @@ export class UsersService {
     });
   }
 
-  async createUser(
-    data: SignUpUserDto,
-    status: UserStatus = 'PENDING_COMPLETION',
-  ) {
-    const { email, password, countryId, username, ...otherData } = data;
+  async createUser(data: SignUpUserDto) {
+    const { email, password, username, ...otherData } = data;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -101,22 +74,13 @@ export class UsersService {
       throw new BadRequestException('User with this email already exists');
     }
 
-    const existingUserName = await this.prisma.user.findUnique({
-      where: { username: username },
-      select: { id: true },
-    });
-    if (existingUserName) {
-      throw new BadRequestException('Username is already taken');
-    }
-
-    if (countryId) {
-      const country = await this.prisma.country.findUnique({
-        where: { id: countryId },
+    if (username) {
+      const existingUserName = await this.prisma.user.findUnique({
+        where: { username: username },
         select: { id: true },
       });
-
-      if (!country) {
-        throw new BadRequestException('Country not found');
+      if (existingUserName) {
+        throw new BadRequestException('Username is already taken');
       }
     }
 
@@ -125,10 +89,8 @@ export class UsersService {
     const user = await this.prisma.user.create({
       data: {
         email,
-        username: username,
         password: hashedPassword,
-        countryId,
-        status,
+        username,
         ...otherData,
       },
       select: this.userSelectFields,
@@ -144,8 +106,6 @@ export class UsersService {
     const {
       search,
       role,
-      language,
-      countryId,
       page = 1,
       limit = 10,
       sortBy = 'desc' as const,
@@ -165,14 +125,6 @@ export class UsersService {
 
     if (role) {
       where.role = role;
-    }
-
-    if (language) {
-      where.language = language;
-    }
-
-    if (countryId) {
-      where.countryId = countryId;
     }
 
     const skip = (page - 1) * limit;
@@ -222,11 +174,10 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-    status: UserStatus = UserStatus.ACTIVE,
   ) {
     const existingUser = await this.prisma.user.findUnique({
       where: { id, deletedAt: null },
-      select: { id: true, countryId: true },
+      select: { id: true },
     });
 
     if (!existingUser) {
@@ -235,28 +186,17 @@ export class UsersService {
 
     if (updateUserDto.username) {
       const existingUserName = await this.prisma.user.findUnique({
-        where: { username: updateUserDto.name },
+        where: { username: updateUserDto.username },
         select: { id: true },
       });
-      if (existingUserName) {
+      if (existingUserName && existingUserName.id !== id) {
         throw new BadRequestException('Username is already taken');
-      }
-    }
-
-    if (updateUserDto.countryId) {
-      const country = await this.prisma.country.findUnique({
-        where: { id: updateUserDto.countryId },
-        select: { id: true },
-      });
-
-      if (!country) {
-        throw new BadRequestException('Country not found');
       }
     }
 
     const user = await this.prisma.user.update({
       where: { id },
-      data: { ...updateUserDto, status: status },
+      data: { ...updateUserDto },
       select: this.userSelectFields,
     });
 

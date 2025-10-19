@@ -10,7 +10,7 @@ import { UsersService } from 'src/modules/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpUserDto } from '../dto/sign-up-user.dto';
 import { TokenService } from 'src/common/services/token.service';
-import { User, UserStatus } from '@prisma/client';
+import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompleteProfileDto } from '../dto/complete-profile.dto';
 import {
@@ -63,12 +63,9 @@ export class UsersAuthService {
       throw new BadRequestException('User with this email already exists');
     }
 
-    return await this.usersService.createUser(
-      {
-        ...data,
-      },
-      'ACTIVE',
-    );
+    return await this.usersService.createUser({
+      ...data,
+    });
   }
 
   async validateUser(email: string, password: string) {
@@ -137,10 +134,6 @@ export class UsersAuthService {
       throw new NotFoundException('User not found');
     }
 
-    if (user.status !== UserStatus.PENDING_COMPLETION) {
-      throw new ForbiddenException('Profile has already been completed.');
-    }
-
     const updatedUser = await this.usersService.update(userId, {
       ...dto,
     });
@@ -171,7 +164,6 @@ export class UsersAuthService {
           email,
           name,
           googleId,
-          status: UserStatus.PENDING_COMPLETION,
         },
       });
     }
@@ -214,7 +206,6 @@ export class UsersAuthService {
           email,
           name,
           facebookId,
-          status: UserStatus.PENDING_COMPLETION,
         },
       });
     }
